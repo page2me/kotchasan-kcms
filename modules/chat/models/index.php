@@ -91,6 +91,18 @@ class Model extends \Kotchasan\Model
   {
     // ตาราง chat
     $table = $this->getTableName('chat');
+    // ตรวจสอบวันใหม่ และ ลบข้อมูลการทนทนาออกหากเริ่มวันใหม่
+    if (is_file(ROOT_PATH.DATA_FOLDER.'chat.log')) {
+      $d = (int)file_get_contents(ROOT_PATH.DATA_FOLDER.'chat.log');
+      if ($d != (int)date('d')) {
+        // ลบข้อมูล
+        $this->db()->emptyTable($table);
+      }
+    }
+    // บันทึกวันนี้เป็นไฟล์
+    $f = fopen(ROOT_PATH.DATA_FOLDER.'chat.log', 'w');
+    fwrite($f, (int)date('d'));
+    fclose($f);
     // ตรวจสอบชื่อสมาชิกซ้ำในฐานข้อมูล
     while (true) {
       $name = 'Guest_'.\Kotchasan\Text::rndname(4, '123456789');
