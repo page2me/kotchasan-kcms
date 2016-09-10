@@ -20,3 +20,6 @@
 
 ## การใช้งาน
 เข้าระบบผู้ดูแล /admin/index.php
+
+## ตัวอย่าง
+http://workshop.kotchasan.com/kcms/
