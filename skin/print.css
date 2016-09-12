@@ -119,7 +119,6 @@ u {
 code {
   background-color: #EAFEE9;
   border-left: 4px solid #F480D1;
-  margin-top: 10px;
   padding: 5px 0 5px 5px;
   display: block;
 }
@@ -128,7 +127,13 @@ blockquote {
   font-style: italic;
   position: relative;
   padding: 5px 20px;
-  margin: 10px 0;
+}
+code, blockquote {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+code + br, blockquote + br {
+  display: none;
 }
 blockquote > b {
   font-weight: bold;

@@ -25,8 +25,9 @@ class Model extends \Kotchasan\Model
    */
   public static function get()
   {
+    // เรียกใช้งาน Model
     $model = new static;
-    // query
+    // query ข้อมูลเมนูจากฐานข้อมูล
     $query = $model->db()->createQuery()
       ->select()
       ->from('menu')
@@ -38,6 +39,7 @@ class Model extends \Kotchasan\Model
     $result = array();
     // query ข้อมูลและจัดรูปแบบเพื่อใส่ลงใน Array ตามข้อกำหนดของโมดูล
     foreach ($query->execute() as $item) {
+      // จัดรูปแบบข้อมูลเมนูให้เหมาะสม สำหรับการสร้างเมนู
       $result[$item->module] = array(
         'text' => $item->text,
         'target' => $item->target
@@ -48,6 +50,7 @@ class Model extends \Kotchasan\Model
         $result[$item->module]['url'] = $item->url;
       }
     }
+    // คืนค่ารายการเมนูที่จัดรูปแบบแล้ว
     return $result;
   }
 }

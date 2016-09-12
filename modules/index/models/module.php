@@ -26,8 +26,9 @@ class Model extends \Kotchasan\Model
    */
   public static function get($module)
   {
+    // เรียกใช้งาน Model
     $model = new static;
-    // query
+    // query ข้อมูลโมดูล (หน้าเพจ) ที่ต้องการ
     $query = $model->db()->createQuery()
       ->from('site')
       ->where(array(
@@ -37,6 +38,7 @@ class Model extends \Kotchasan\Model
     // คำสั่งสำหรับดู query
     // SELECT * FROM `u`.`site` WHERE `module` = 'home' LIMIT 1
     //echo $query->select()->limit(1)->text();
+    // คืนค่าข้อมูลที่พบ รายการเดียว
     return $query->first();
   }
 }

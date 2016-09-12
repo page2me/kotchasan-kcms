@@ -28,6 +28,21 @@ class Model extends \Kotchasan\Orm\Field
   protected $table = 'menu';
 
   /**
+   * อ่านรายการเมนูที่ ID สำหรับการแก้ไข
+   *
+   * @param int $id ID ของรายการที่ต้องการ
+   * @return object|boolean คืนค่ารายการที่พบ, ไม่พบคืนค่า false
+   */
+  public static function get($id)
+  {
+    // เรียกใช้งาน Model
+    $model = new \Kotchasan\Model;
+    // ตรวจสอบรายการที่แก้ไข
+    // SELECT * FROM `u`.`menu` WHERE `id` = $id LIMIT 1
+    return $model->db()->createQuery()->from('menu')->where($id)->first();
+  }
+
+  /**
    * รับค่าจาก action ของตาราง
    *
    * @param Request $request
@@ -71,9 +86,11 @@ class Model extends \Kotchasan\Orm\Field
       $id = $request->post('write_id')->toInt();
       // ตรวจสอบค่าที่ส่งมา
       $ret = array();
-      // Model
+      // เรียกใช้งาน Model
       $model = new \Kotchasan\Model;
       $db = $model->db();
+      // โหลดเมนูทั้งหมดออกมาก่อน
+      // SELECT * FROM u.`menu` ORDER BY `order`, `id`
       $query = $db->createQuery()->select()->from('menu')->order('order', 'id');
       $menus = array();
       foreach ($query->execute() as $item) {
@@ -92,7 +109,7 @@ class Model extends \Kotchasan\Orm\Field
         // ชื่อตาราง menu
         $table_name = $model->getTableName('menu');
         // ลบข้อมูลทั้งหมดในตาราง
-        $model->db()->emptyTable($table_name);
+        $db->emptyTable($table_name);
         $order = 1;
         foreach ($menus as $key => $item) {
           // ตรงกับ ID ที่ต้องการ เก็บรายการใหม่

@@ -10,7 +10,6 @@ namespace Index\Pages;
 
 use \Kotchasan\Http\Request;
 use \Kotchasan\Login;
-use \Kotchasan\Orm\Recordset;
 
 /**
  * ตารางหน้าเพจ
@@ -29,6 +28,21 @@ class Model extends \Kotchasan\Orm\Field
   protected $table = 'site';
 
   /**
+   * อ่านรายการโมดูลที่ ID สำหรับการแก้ไข
+   *
+   * @param int $id ID ของรายการที่ต้องการ
+   * @return object|boolean คืนค่ารายการที่พบ, ไม่พบคืนค่า false
+   */
+  public static function get($id)
+  {
+    // เรียกใช้งาน Model
+    $model = new \Kotchasan\Model;
+    // ตรวจสอบรายการที่แก้ไข
+    // SELECT * FROM `u`.`site` WHERE `id` = $id LIMIT 1
+    return $model->db()->createQuery()->from('site')->where($id)->first();
+  }
+
+  /**
    * รับค่าจาก action ของตาราง
    *
    * @param Request $request
@@ -44,9 +58,9 @@ class Model extends \Kotchasan\Orm\Field
         foreach (explode(',', $request->post('id')->filter('\d,')) as $item) {
           $ids[] = (int)$item;
         }
-        // ลบข้อมูลด้วย Recordset
-        $rs = Recordset::create(__CLASS__);
-        $rs->delete(array('id', $ids), true);
+        // ลบข้อมูลด้วย Model
+        $model = new \Kotchasan\Model;
+        $model->db()->delete($model->getTableName('site'), array('id', $ids), 0);
       }
     }
   }
@@ -70,11 +84,9 @@ class Model extends \Kotchasan\Orm\Field
       $id = $request->post('write_id')->toInt();
       // ตรวจสอบค่าที่ส่งมา
       $ret = array();
-      // Recordset
-      $rs = Recordset::create(__CLASS__);
       if ($id > 0) {
         // ตรวจสอบรายการที่แก้ไข
-        $index = $rs->find($id);
+        $index = self::get($id);
       }
       if ($id > 0 && !$index) {
         $ret['alert'] = 'ไม่พบข้อมูลที่แก้ไข กรุณารีเฟรช';
@@ -85,20 +97,15 @@ class Model extends \Kotchasan\Orm\Field
         $ret['alert'] = 'กรุณากรอก หัวข้อ';
         $ret['input'] = 'write_topic';
       } else {
+        // เรียกใช้งาน Model
+        $model = new \Kotchasan\Model;
         // บันทึก
         if ($id == 0) {
           // ใหม่
-          $index = \Index\Pages\Model::create();
-          foreach ($save as $key => $value) {
-            $index->$key = $value;
-          }
-          $rs->insert($index);
+          $model->db()->insert($model->getTableName('site'), $save);
         } else {
           // แก้ไข
-          foreach ($save as $key => $value) {
-            $index->$key = $value;
-          }
-          $index->save();
+          $model->db()->update($model->getTableName('site'), $id, $save);
         }
         // เคลียร์ Token
         $request->removeToken();

@@ -11,7 +11,6 @@ namespace Index\Pagewrite;
 use \Kotchasan\Http\Request;
 use \Kotchasan\Login;
 use \Kotchasan\Html;
-use \Kotchasan\Orm\Recordset;
 
 /**
  * Description
@@ -31,8 +30,7 @@ class Controller extends \Kotchasan\Controller
       $id = $request->get('id')->toInt();
       if ($id > 0) {
         // ตรวจสอบรายการที่แก้ไข
-        $rs = Recordset::create('Index\Pages\Model');
-        $index = $rs->find($id);
+        $index = \Index\Pages\Model::get($id);
       } else {
         // ใหม่
         $index = (object)array(
