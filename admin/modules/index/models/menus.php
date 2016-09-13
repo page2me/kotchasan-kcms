@@ -29,6 +29,7 @@ class Model extends \Kotchasan\Orm\Field
 
   /**
    * อ่านรายการเมนูที่ ID สำหรับการแก้ไข
+   * หรือ อ่าน ID ถัดไป ของเมนู สำหรับการสร้างเมนูใหม่
    *
    * @param int $id ID ของรายการที่ต้องการ
    * @return object|boolean คืนค่ารายการที่พบ, ไม่พบคืนค่า false
@@ -37,9 +38,17 @@ class Model extends \Kotchasan\Orm\Field
   {
     // เรียกใช้งาน Model
     $model = new \Kotchasan\Model;
-    // ตรวจสอบรายการที่แก้ไข
-    // SELECT * FROM `u`.`menu` WHERE `id` = $id LIMIT 1
-    return $model->db()->createQuery()->from('menu')->where($id)->first();
+    if ($id == 0) {
+      // สร้างเมนูใหม่ query ID ถัดไป ของเมนูเพื่อใช้เป็นเลขลำดับของเมนูต่อจากเมนูสุดท้าย
+      // (1 + IFNULL((SELECT MAX(`order`) FROM `u`.`menu`), 0)) AS `order`
+      $q1 = $model->db()->createQuery()->buildNext('order', 'menu', null, 'order');
+      // SELECT 0 AS `id`, (1 + IFNULL((SELECT MAX(`order`) FROM `u`.`menu`), 0)) AS `order` LIMIT 1
+      return $model->db()->createQuery()->first('0 id', $q1);
+    } else {
+      // ตรวจสอบรายการที่แก้ไข
+      // SELECT * FROM `u`.`menu` WHERE `id` = $id LIMIT 1
+      return $model->db()->createQuery()->from('menu')->where($id)->first();
+    }
   }
 
   /**

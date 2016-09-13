@@ -27,16 +27,7 @@ class Controller extends \Kotchasan\Controller
     // แอดมิน
     if (Login::isMember()) {
       // ข้อมูลที่ต้องการ
-      $id = $request->get('id')->toInt();
-      if ($id > 0) {
-        // ตรวจสอบรายการที่แก้ไข
-        $index = \Index\Pages\Model::get($id);
-      } else {
-        // ใหม่
-        $index = (object)array(
-            'id' => 0
-        );
-      }
+      $index = \Index\Pages\Model::get($request->get('id')->toInt());
       if ($index) {
         // แสดงผล
         $section = Html::create('section');

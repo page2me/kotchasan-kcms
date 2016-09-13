@@ -29,17 +29,24 @@ class Model extends \Kotchasan\Orm\Field
 
   /**
    * อ่านรายการโมดูลที่ ID สำหรับการแก้ไข
+   * หรือคืนค่า id = 0 สำหรับการเพิ่มโมดูลใหม่
    *
    * @param int $id ID ของรายการที่ต้องการ
    * @return object|boolean คืนค่ารายการที่พบ, ไม่พบคืนค่า false
    */
   public static function get($id)
   {
-    // เรียกใช้งาน Model
-    $model = new \Kotchasan\Model;
-    // ตรวจสอบรายการที่แก้ไข
-    // SELECT * FROM `u`.`site` WHERE `id` = $id LIMIT 1
-    return $model->db()->createQuery()->from('site')->where($id)->first();
+    if ($id === 0) {
+      return (object)array(
+          'id' => 0
+      );
+    } else {
+      // เรียกใช้งาน Model
+      $model = new \Kotchasan\Model;
+      // ตรวจสอบรายการที่แก้ไข
+      // SELECT * FROM `u`.`site` WHERE `id` = $id LIMIT 1
+      return $model->db()->createQuery()->from('site')->where($id)->first();
+    }
   }
 
   /**

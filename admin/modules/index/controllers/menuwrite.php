@@ -27,19 +27,7 @@ class Controller extends \Kotchasan\Controller
     // แอดมิน
     if (Login::isMember()) {
       // ข้อมูลที่ต้องการ
-      $id = $request->get('id')->toInt();
-      // Model
-      $model = new \Kotchasan\Model;
-      if ($id > 0) {
-        // ตรวจสอบรายการที่แก้ไข
-        // SELECT * FROM `u`.`menu` WHERE `id` = $id LIMIT 1
-        $index = $model->db()->createQuery()->from('menu')->where($id)->first();
-      } else {
-        // ใหม่ query ID ถัดไป
-        // SELECT 0 AS `id`, (1 + IFNULL((SELECT MAX(`order`) FROM `u`.`menu`), 0)) AS `order` LIMIT 1
-        $q1 = $model->db()->createQuery()->buildNext('order', 'menu', null, 'order');
-        $index = $model->db()->createQuery()->first('0 id', $q1);
-      }
+      $index = \Index\Menus\Model::get($request->get('id')->toInt());
       if ($index) {
         // แสดงผล
         $section = Html::create('section');

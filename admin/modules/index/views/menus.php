@@ -31,8 +31,9 @@ class View extends \Kotchasan\View
   {
     // action
     $actions = array('delete' => 'Remove');
-    // ตารางสมาชิก
+    // ตารางรายการเมนู
     $table = new DataTable(array(
+      /* โหลดข้อมูลมาแสดงผลด้วย Model */
       'model' => 'Index\Menus\Model',
       /* เรียงลำดับข้อมูล */
       'sort' => 'order ASC',

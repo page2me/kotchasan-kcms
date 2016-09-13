@@ -32,10 +32,13 @@ class View extends \Kotchasan\View
   {
     // action
     $actions = array('delete' => 'Remove');
-    // ตารางสมาชิก
+    // ตารางรายการหน้าเพจ
     $table = new DataTable(array(
+      /* โหลดข้อมูลมาแสดงผลด้วย Model */
       'model' => 'Index\Pages\Model',
+      /* กำหนดการแสดงผลตัวแบ่งหน้า */
       'perPage' => $request->cookie('pages_perPage', 30)->toInt(),
+      /* กำหนดวิธีการจัดรูปแบบข้อมูลแต่ละแถวในการแสดงผลด้วยตัวเอง */
       'onRow' => array($this, 'onRow'),
       /* คอลัมน์ที่สามารถค้นหาได้ */
       'searchColumns' => array('module', 'topic', 'detail'),
@@ -108,6 +111,7 @@ class View extends \Kotchasan\View
   {
     $item['topic'] = '<a href="../index.php?module='.$item['module'].'" target=_blank>'.$item['topic'].'</a>';
     $item['detail'] = Text::cut(strip_tags($item['detail']), 100);
+    // คืนค่าข้อมูลทั้งหมดหลังจากจัดรูปแบบแล้วกลับไปแสดงผล
     return $item;
   }
 }
