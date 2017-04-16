@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * @filesource Kotchasan/Form.php
  * @link http://www.kotchasan.com/
  * @copyright 2016 Goragod.com
@@ -179,12 +179,16 @@ class Form extends \Kotchasan\KBase
     } elseif (isset($value)) {
       if ($this->tag === 'textarea') {
         $value = str_replace(array('{', '}', '&amp;'), array('&#x007B;', '&#x007D;', '&'), htmlspecialchars($value));
-      } else {
+      } elseif ($this->tag != 'button') {
         $prop['value'] = 'value="'.str_replace('&amp;', '&', htmlspecialchars($value)).'"';
       }
     }
-    if (empty($prop['title']) && !empty($comment)) {
-      $prop['title'] = 'title="'.strip_tags($comment).'"';
+    if (empty($prop['title'])) {
+      if (!empty($comment)) {
+        $prop['title'] = 'title="'.strip_tags($comment).'"';
+      } elseif (!empty($label)) {
+        $prop['title'] = 'title="'.strip_tags($label).'"';
+      }
     }
     if (isset($dataPreview)) {
       $prop['data-preview'] = 'data-preview="'.$dataPreview.'"';
@@ -208,6 +212,7 @@ class Form extends \Kotchasan\KBase
     }
     if (empty($itemClass)) {
       $input = empty($comment) ? '' : '<div class="item"'.(empty($itemId) ? '' : ' id="'.$itemId.'"').'>';
+      $input = empty($unit) ? '' : '<div class="wlabel">';
       if (empty($labelClass) && empty($label)) {
         $input .= $element;
       } elseif (isset($type) && ($type === 'checkbox' || $type === 'radio')) {
@@ -215,11 +220,16 @@ class Form extends \Kotchasan\KBase
       } else {
         $input .= '<label'.(empty($labelClass) ? '' : ' class="'.$labelClass.'"').'>'.(empty($label) ? '' : $label.'&nbsp;').$element.'</label>';
       }
+      if (!empty($unit)) {
+        $input .= '<span class=label>'.$unit.'</span></div>';
+      }
       if (!empty($comment)) {
-        $input .= '<div class="comment"'.(empty($id) ? '' : ' id="result_'.$id.'"').'>'.$comment.'</div></div>';
+        $input .= '<div class="comment"'.(empty($id) ? '' : ' id="result_'.$id.'"').'>'.$comment.'</div>';
       }
     } else {
-      $itemClass .= isset($unit) ? ' wlabel' : '';
+      if (!empty($unit)) {
+        $itemClass .= ' wlabel';
+      }
       $input = '<div class="'.$itemClass.'"'.(empty($itemId) ? '' : ' id="'.$itemId.'"').'>';
       if (isset($type) && $type === 'checkbox') {
         $input .= '<label'.(empty($labelClass) ? '' : ' class="'.$labelClass.'"').'>'.$element.'&nbsp;'.$label.'</label>';
@@ -231,7 +241,7 @@ class Form extends \Kotchasan\KBase
           $input .= '<label for="'.$id.'">'.$label.'</label>';
         }
         $input .= '<span'.(empty($labelClass) ? '' : ' class="'.$labelClass.'"').'>'.$element.'</span>';
-        if (isset($unit)) {
+        if (!empty($unit)) {
           $input .= '<span class=label>'.$unit.'</span>';
         }
       }
@@ -471,8 +481,13 @@ class Form extends \Kotchasan\KBase
   {
     $hiddens = array();
     foreach (self::$request->getQueryParams() AS $key => $value) {
-      if (preg_match('/^[_]+(.*)$/', $key, $match)) {
-        $hiddens[] = '<input type="hidden" name="_'.$match[1].'" value="'.$value.'">';
+      if ($value != '' && preg_match('/^[_]+([^0-9]+)$/', $key, $match)) {
+        $hiddens[$match[1]] = '<input type="hidden" name="_'.$match[1].'" value="'.$value.'">';
+      }
+    }
+    foreach (self::$request->getParsedBody() AS $key => $value) {
+      if ($value != '' && preg_match('/^[_]+([^0-9]+)$/', $key, $match)) {
+        $hiddens[$match[1]] = '<input type="hidden" name="_'.$match[1].'" value="'.$value.'">';
       }
     }
     return $hiddens;

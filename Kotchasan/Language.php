@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * @filesource Kotchasan/Language.php
  * @link http://www.kotchasan.com/
  * @copyright 2016 Goragod.com
@@ -47,7 +47,7 @@ final class Language extends \Kotchasan\KBase
     // โฟลเดอร์ ภาษา
     $language_folder = self::languageFolder();
     // ภาษาที่เลือก
-    $lang = self::$request->get('lang', self::$request->cookie('my_lang', '')->toString())->toString();
+    $lang = self::$request->get('lang', self::$request->cookie('my_lang', '')->toString())->filter('a-z');
     if (empty($lang)) {
       if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) && defined('AUTO_LANGUAGE')) {
         // ภาษาจาก Browser
@@ -360,8 +360,8 @@ final class Language extends \Kotchasan\KBase
       new static;
     }
     $result = array();
-    foreach ($keys as $key) {
-      $result[$key] = isset(self::$languages->$key) ? self::$languages->$key : $key;
+    foreach ($keys as $i => $key) {
+      $result[is_int($i) ? $key : $i] = isset(self::$languages->$key) ? self::$languages->$key : $key;
     }
     return $result;
   }

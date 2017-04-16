@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * @filesource Kotchasan/Html.php
  * @link http://www.kotchasan.com/
  * @copyright 2016 Goragod.com
@@ -140,6 +140,11 @@ class Html extends \Kotchasan\KBase
     } elseif ($tag == 'row') {
       $obj = new static('div', array(
         'class' => 'row'
+      ));
+      $this->rows[] = $obj;
+    } elseif ($tag == 'rowgroup') {
+      $obj = new static('div', array(
+        'class' => 'rowgroup'
       ));
       $this->rows[] = $obj;
     } elseif ($tag == 'radiogroups' || $tag == 'checkboxgroups') {

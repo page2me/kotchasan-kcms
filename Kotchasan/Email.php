@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * @filesource Kotchasan/Email.php
  * @link http://www.kotchasan.com/
  * @copyright 2016 Goragod.com
@@ -44,6 +44,7 @@ class Email extends \Kotchasan\Model
       $msg = iconv('utf-8', $charset, $msg);
       $replyto[1] = iconv('utf-8', $charset, $replyto[1]);
     }
+    $msg = preg_replace(array('/<\?/', '/\?>/'), array('&lt;?', '?&gt;'), $msg);
     $messages = array();
     if (empty(self::$cfg->email_use_phpMailer)) {
       // ส่งอีเมล์ด้วยฟังก์ชั่นของ PHP
@@ -52,10 +53,6 @@ class Email extends \Kotchasan\Model
         $headers .= "Content-type: text/html; charset=".strtoupper($charset)."\r\n";
         $headers .= "From: ".strip_tags($replyto[1])."\r\n";
         $headers .= "Reply-to: $replyto[0]\r\n";
-        if (function_exists('imap_8bit')) {
-          $subject = "=?$charset?Q?".imap_8bit($subject)."?=";
-          $msg = imap_8bit($msg);
-        }
         if (!@mail($email, $subject, $msg, $headers)) {
           $messages = array(Language::get('Unable to send mail'));
         }
@@ -83,8 +80,19 @@ class Email extends \Kotchasan\Model
       if (!empty(self::$cfg->email_Port)) {
         $mail->Port = self::$cfg->email_Port;
       }
+      $mail->smtpConnect(
+        array(
+          "ssl" => array(
+            "verify_peer" => false,
+            "verify_peer_name" => false,
+            "allow_self_signed" => true
+          )
+        )
+      );
       $mail->AddReplyTo($replyto[0], $replyto[1]);
-      $mail->SetFrom(self::$cfg->noreply_email, strip_tags(self::$cfg->web_title));
+      if ($mail->ValidateAddress(self::$cfg->noreply_email)) {
+        $mail->SetFrom(self::$cfg->noreply_email, strip_tags(self::$cfg->web_title));
+      }
       // subject
       $mail->Subject = $subject;
       // message

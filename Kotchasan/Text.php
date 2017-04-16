@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * @filesource Kotchasan/Text.php
  * @link http://www.kotchasan.com/
  * @copyright 2016 Goragod.com
@@ -175,5 +175,23 @@ class Text
   public static function username($value)
   {
     return preg_replace('/[^a-zA-Z0-9@\?\.\-_]+/', '', $value);
+  }
+
+  /**
+   * ฟังก์ชั่นคืนค่าข้อความซ้ำๆตามจำนวนที่กำหนด
+   *
+   * @param string $text ข้อความหรือตัวอักษรที่ต้องการทำซ้ำ
+   * @param int $count จำนวนที่ต้องการ
+   * @return string
+   *
+   * @assert ('0', 10) [==] '0000000000'
+   */
+  public static function repeat($text, $count)
+  {
+    $result = '';
+    for ($i = 0; $i < $count; $i++) {
+      $result .= $text;
+    }
+    return $result;
   }
 }

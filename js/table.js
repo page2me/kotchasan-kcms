@@ -134,9 +134,11 @@
             hs = patt.exec(this.id);
             if (hs) {
               if (hs[1] == 'delete') {
-                if (confirm(trans('You want to delete ?'))) {
+                if (confirm(trans('You want to XXX ?').replace(/XXX/, trans('delete')))) {
                   action = 'action=delete&id=' + hs[2];
                 }
+              } else if (hs[4]) {
+                action = 'action=' + hs[1] + '_' + hs[2] + '&id=' + hs[4];
               } else {
                 action = 'action=' + hs[1] + '&id=' + hs[2];
               }
@@ -251,7 +253,7 @@
           if (temp.options.onBeforeDelete) {
             ret = temp.options.onBeforeDelete.call(temp, tr);
           } else if (tbody.elems('tr').length > 1) {
-            ret = confirm(trans('You want to delete ?'));
+            ret = confirm(trans('You want to XXX ?').replace(/XXX/, trans('delete')));
           }
           if (ret) {
             if (tbody.elems('tr').length > 1) {
@@ -265,7 +267,7 @@
           }
         } else if (hs = a_patt.exec(c)) {
           var action = '';
-          if (hs[1] == 'delete' && confirm(trans('You want to delete ?'))) {
+          if (hs[1] == 'delete' && confirm(trans('You want to XXX ?').replace(/XXX/, trans('delete')))) {
             action = 'action=delete&id=' + hs[2];
           }
           if (action != '' && temp.options.action) {
